@@ -2,12 +2,6 @@
 
 The 2017 Visualization website is built with [Jekyll](http://jekyllrb.com).
 
-#### Ubuntu Prerequisites
-
-```ShellSession
-$ sudo apt-get install ruby-dev
-```
-
 #### Setup
 
 Requires Jekyll 2.4.0 or later.
@@ -16,10 +10,12 @@ Requires Jekyll 2.4.0 or later.
 $ gem install jekyll
 ```
 
-#### Generate and/or Serve Site
+#### Generate, Serve and Deploy Site
 
 ```ShellSession
 $ bundle exec jekyll serve --watch
+$ rake generate
+$ rake deploy
 ```
 
 #### View Site
@@ -32,10 +28,9 @@ $ open http://0.0.0.0:4000/
 
 https://github.com/Shopify/liquid/wiki/Liquid-for-Designers
 
-### Windows Installation Instructions
-
-http://jekyll-windows.juthilo.com/1-ruby-and-devkit/
-
 ### Deployment
 
-Just push your changes. An automatic build will compile it using jekyll 2.4.0 and push it to the public repository  
+```ShellSession
+$ rake generate
+$ rake deploy
+```
