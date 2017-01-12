@@ -8,7 +8,7 @@ html, body {
   height: 100%; }
 
 body {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: Rubik, Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   font-weight: 300;
@@ -21,7 +21,7 @@ img {
 h1, h2, h3, h4, h5, h6 {
   font-size: 100%;
   font-weight: 400;
-  font-family: "Open Sans"; }
+  font-family: Rubik; }
 
 a {
   color: #b00;
@@ -73,7 +73,7 @@ table th, table td {
   border-bottom: 1px solid; }
 
 .day {
-  font-family: "Open Sans";
+  font-family: Rubik;
   font-size: 1.3em; }
 
 .note-box, .lecture, .deadline {
@@ -99,7 +99,7 @@ table th, table td {
   margin-bottom: 4px; }
 
 #schedule h4 {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: Rubik, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 500;
   margin-top: 2px;
@@ -122,7 +122,7 @@ table th, table td {
 .site-title,
 .site-title:hover,
 .site-title:visited {
-  font-family: "Open Sans";
+  font-family: Rubik;
   font-weight: 500;
   color: #333;
   font-size: 50px;
@@ -132,7 +132,7 @@ table th, table td {
   text-decoration: none; }
 
 .site-subtitle {
-  font-family: "Open Sans";
+  font-family: Rubik;
   font-weight: 400;
   display: block;
   color: #333;
@@ -680,3 +680,5 @@ table th, table td {
     clear: both;
     width: auto;
     margin: 0 0 15px; } }
+
+/*# sourceMappingURL=main.css.map */
