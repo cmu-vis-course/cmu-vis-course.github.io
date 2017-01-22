@@ -91,6 +91,9 @@ table th, table td {
   background-color: #e0e0e0;
   font-weight: bold; }
 
+#schedule h1 {
+  font-size: 40px; }
+
 #schedule h3 {
   font-size: 19px;
   width: 70%;
@@ -680,5 +683,3 @@ table th, table td {
     clear: both;
     width: auto;
     margin: 0 0 15px; } }
-
-/*# sourceMappingURL=main.css.map */
