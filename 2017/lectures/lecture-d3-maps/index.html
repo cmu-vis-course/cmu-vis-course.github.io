@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Visualization in HCI - Advanced D3&#58; Maps, Transitions, and Interactions</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Visualization in HCI - Course at Carnegie Mellon">
+  <link rel="canonical" href="http://cmu-vis-course.github.io//2017/lectures/lecture-d3-maps/">
+  <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/2017/css/main.css">
+  <link rel="shortcut icon" type="image/x-icon" href="/2017/favicon.ico">
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+<div class="site-title-all">
+    <!-- <div><a class="site-title" href="/2017/">Visualization in HCI</a></div> -->
+    <!-- <div class="site-subtitle">CS-171 / CSCI E-171</div> -->
+	<a class="site-title" href="#">
+    Visualization in HCI
+	</a>
+  <a class="site-subtitle" href="#">
+  05-499/05-899 Section C</a>
+</div>
+
+  <div id="hciiLogo" style="padding:0;"><img style="padding:0;height:50px" id="hciiLogoImg" src="/2017/assets/i/hcii-logo.png" alt="hcii-logo" /></div>
+
+  <div id="cmuLogo" style="padding:0;"><img style="padding:0;height:50px" id="cmuLogoImg" src="/2017/assets/i/CMU_logo_stack_red.png" alt="cmu-logo" /></div>
+
+
+  </div>
+
+  <div class="wrap">
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+
+
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <a class="page-link" href="/2017/">Home</a>
+        
+        
+        
+        <a class="page-link" href="/2017/syllabus/">Syllabus</a>
+        
+        
+        
+        <a class="page-link" href="/2017/schedule/">Schedule</a>
+        
+        
+        
+        <a class="page-link" href="/2017/project/">Project</a>
+        
+        
+        
+        <a class="page-link" href="/2017/homework/">Homework</a>
+        
+        
+        <!-- <a class="page-link" href="https://canvas.harvard.edu/courses/16470">Canvas</a>
+        <a class="page-link" href="https://piazza.com/harvard/fall2016/cs171">Piazza</a> -->
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <!-- Source: http://liveweave.com/JlSG6D -->
+<html class="post">
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script src="/2017/assets/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="/2017/assets/codemirror/lib/codemirror.css">
+<script src="/2017/assets/codemirror/mode/javascript/javascript.js"></script>
+<script src="/2017/assets/codemirror/mode/xml/xml.js"></script>
+<script src="/2017/assets/codemirror/mode/css/css.js"></script>
+<script src="/2017/assets/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+<!-- <script src='https://codemirror.net/lib/codemirror.js'></script>
+<script src='https://codemirror.net/mode/xml/xml.js'></script>
+<script src='https://codemirror.net/mode/javascript/javascript.js'></script>
+<script src='https://codemirror.net/mode/css/css.js'></script>
+<script src='https://codemirror.net/mode/htmlmixed/htmlmixed.js'></script>
+<link rel='stylesheet' href='https://codemirror.net/lib/codemirror.css'> -->
+<style type='text/css'>
+    .CodeMirror {
+        float: left;
+        width: 100%;
+        border: 1px solid gray;
+        height: auto;
+    }
+
+    .CodePreview {
+        width: 100%;
+        float: left;
+        border: 1px solid gray;
+    }
+</style>
+<script>
+
+    function renderCode(id, file, code, js, renderPreview) {
+        var delay;
+
+        var boilerplateHTML = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'><title><\/title><\/head><body><script src='/2017/lectures/logger.js'\/>\n";
+        var endHTML = "\n<\/script><div id='log'></div><\/body><\/html>";
+
+        var highlightLanguage = "text/html";
+        if (js == "true") {
+            highlightLanguage = "text/javascript"
+        }
+
+        // Initialize CodeMirror editor
+        var editor = CodeMirror.fromTextArea(document.getElementById(id), {
+            mode: highlightLanguage,
+            tabMode: 'indent',
+            lineNumbers: true,
+            lineWrapping: true,
+            autoCloseTags: true
+        });
+
+        // Live preview
+        editor.on("change", function () {
+            clearTimeout(delay);
+            delay = setTimeout(updatePreview, 1000);
+        });
+
+        function updatePreview() {
+
+            if (renderPreview == "false" && js == "true") {
+                // if we don't want to see a preview we just evaluate the javascript code
+                eval(editor.getValue());
+            }
+            if (renderPreview != "false" && js != "true") {
+
+                var previewFrame = document.getElementById('preview-' + id);
+                if (previewFrame) {
+                    // here you can set the height, I delete it first, then I make it again
+                    //    previewFrame.height = "";
+                    //  previewFrame.height = previewFrame.contentWindow.document.body.scrollHeight + "px";
+
+
+                    var preview = previewFrame.contentDocument || previewFrame.contentWindow.document;
+
+                    preview.open();
+                    preview.write(editor.getValue());
+                    preview.close();
+                    var body = previewFrame.contentWindow.document.body;
+                    if (body) {
+                        previewFrame.height = body.scrollHeight + "px";
+                    }
+                }
+            }
+
+        }
+
+        setTimeout(updatePreview, 300);
+
+        function saveTextAsFile() {
+            var textToWrite = document.getElementById(id).value;
+            var textFileAsBlob = new Blob([textToWrite], {
+                type: 'text/plain'
+            });
+            var fileNameToSaveAs = "myfile.html";
+
+            var downloadLink = document.createElement("a");
+            downloadLink.download = fileNameToSaveAs;
+            downloadLink.innerHTML = "Download File";
+            if (window.webkitURL != null) {
+                // Chrome allows the link to be clicked
+                // without actually adding it to the DOM.
+                downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+            } else {
+                // Firefox requires the link to be added to the DOM
+                // before it can be clicked.
+                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                downloadLink.onclick = destroyClickedElement;
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+            }
+
+            downloadLink.click();
+        }
+
+        function destroyClickedElement(event) {
+            document.body.removeChild(event.target);
+        }
+
+        function loadfile(input) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                editor.setValue(e.target.result);
+            }
+            reader.readAsText(input.files[0]);
+        }
+
+        var input = document.getElementById("select");
+
+        function selectTheme() {
+            var theme = input.options[input.selectedIndex].innerHTML;
+            editor.setOption("theme", theme);
+        }
+
+        var choice = document.location.search && decodeURIComponent(document.location.search.slice(1));
+        if (choice) {
+            input.value = choice;
+            editor.setOption("theme", choice);
+        }
+
+
+        // init with file or code
+        if (file != "") {
+            $.get(file, function (data) {
+                editor.setValue(data);
+
+            });
+        } else if (code != "") {
+
+            editor.setValue(code);
+
+        }
+
+
+    }
+
+
+</script>
+</header>
+
+<header class="post-header">
+    <h1>Advanced D3&#58; Maps, Transitions, and Interactions</h1>
+
+</header>
+
+<article class="post-content">
+    <p><em>Material based on Alexander Lex’s lecture and Scott Murray’s book and lecture by <a href="http://duspviz.mit.edu/d3-workshop/transitions-animation/">Mike Foster</a></em></p>
+
+<h2 id="maps">Maps</h2>
+
+<p>Maps, finally! But before we start talking about how to draw maps, a word of caution: maps are heavily over-used. A lot of information that is printed on top of maps would be better of in another type of chart. If we compare data of the five largest cities in the US, we don’t need to do that on a map, everyone knows where New York, Los Angeles, Chicago, Houston, and Philadelphia are, but if we plot this on a map we give up our most important visual channel: position. We’re no longer free to place things where we want!</p>
+
+<p>But let’s get to how we do maps with D3. Generally, there are two approaches:</p>
+
+<ol>
+  <li><strong>Street Map with Data</strong>: If you want to show something in the context of a real street map, your best bet is to use something like the <a href="https://developers.google.com/maps/?hl=en">Google Maps API</a> - <a href="http://bl.ocks.org/mbostock/899711">here’s an example of how it’s used with D3</a>, or the <a href="http://wiki.openstreetmap.org/wiki/API">OpenStreetMap API</a>. You can use D3 to draw things on top of those, but you’ll mainly work with the API provided by the vendor.</li>
+  <li><strong>Data Maps</strong>: If you want to present data on an abstract map, e.g., only showing counties or state borders, D3 is the way to go! We’ll be taking about data maps from now on.</li>
+</ol>
+
+<p>D3 Maps are based on the <a href="http://geojson.org/">GeoJSON format</a> (or the <a href="https://github.com/mbostock/topojson/wiki">TopoJSON variety</a>). The GeoJSON format describes the contained geography as a combination of longitude and latitude coordinates, so that each entry forms a polygon. Here is a sample from the <a href="us-states.json">data file containing US states</a>.</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="lineno"> 1</span> <span class="p">{</span>
+<span class="lineno"> 2</span>      <span class="s2">&quot;type&quot;</span><span class="o">:</span>  <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
+<span class="lineno"> 3</span>      <span class="s2">&quot;features&quot;</span><span class="o">:</span>
+<span class="lineno"> 4</span>      <span class="p">[</span>
+<span class="lineno"> 5</span>          <span class="p">{</span>
+<span class="lineno"> 6</span>              <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
+<span class="lineno"> 7</span>              <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span>
+<span class="lineno"> 8</span>              <span class="s2">&quot;properties&quot;</span><span class="o">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Alabama&quot;</span><span class="p">},</span>
+<span class="lineno"> 9</span>              <span class="s2">&quot;geometry&quot;</span><span class="o">:</span> <span class="p">{</span>
+<span class="lineno">10</span>                 <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;Polygon&quot;</span><span class="p">,</span>
+<span class="lineno">11</span>                 <span class="s2">&quot;coordinates&quot;</span><span class="o">:</span> <span class="p">[[[</span><span class="o">-</span><span class="mf">87.359296</span><span class="p">,</span> <span class="mf">35.00118</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">85.606675</span><span class="p">,</span> <span class="mf">34.984749</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">85.431413</span><span class="p">,</span><span class="mf">34.124869</span><span class="p">],[</span><span class="o">-</span><span class="mf">85.184951</span><span class="p">,</span><span class="mf">32.859696</span><span class="p">],</span> <span class="p">...</span>
+<span class="lineno">12</span>  <span class="p">}</span></code></pre></div>
+
+<p>You can see that the coordinates are within the geometry object, and that the properties tell us that this is the shape repesenting Alabama.<br />
+ These polygons can be easily converted into an SVG path with <code>d3.geoPath()</code> (as always, see the <a href="https://github.com/d3/d3-geo/blob/master/README.md#geoPath">API documentation here</a>).</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="d3_basic_map" name="d3_basic_map"></textarea>
+
+
+<iframe id="preview-d3_basic_map" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("d3_basic_map", "d3_basic_map.html", "", "false", "true");
+</script>
+<i><a href="d3_basic_map.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<p>The previous map uses the geographical information with a default projection. Projections are necessary because the earth is a sphere and can not be directly depicted, without a projection, on a flat surface. There are many projections, with various advantages and disadvantages - we’ll talk about them in class. Let’s center the map and try out a couple:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="d3_projections" name="d3_projections"></textarea>
+
+
+<iframe id="preview-d3_projections" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("d3_projections", "d3_projections.html", "", "false", "true");
+</script>
+<i><a href="d3_projections.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<p>There are a lot of map projections implemented in D3. <a href="http://bl.ocks.org/mbostock/3711652">Here is a showreel</a>.</p>
+
+<p>Here is an example for a choropleth map, coloring each state by its agricultural output. The trick here is to join the data about the output to the geography information:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="d3_choropleth" name="d3_choropleth"></textarea>
+
+
+<iframe id="preview-d3_choropleth" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("d3_choropleth", "d3_choropleth.html", "", "false", "true");
+</script>
+<i><a href="d3_choropleth.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<p>Here is an example for how we can draw marks on top of maps, in this case the size of cities:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="d3_cities" name="d3_cities"></textarea>
+
+
+<iframe id="preview-d3_cities" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("d3_cities", "d3_cities.html", "", "false", "true");
+</script>
+<i><a href="d3_cities.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<h2 id="transitions">Transitions</h2>
+
+<p>Here is some bonus content about transitions we covered by request:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="animation" name="animation"></textarea>
+
+
+<iframe id="preview-animation" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("animation", "animation.html", "", "false", "true");
+</script>
+<i><a href="animation.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<p>Here is an example of animating a line chart:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="animated-line-chart" name="animated-line-chart"></textarea>
+
+
+<iframe id="preview-animated-line-chart" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("animated-line-chart", "animated-line-chart.html", "", "false", "true");
+</script>
+<i><a href="animated-line-chart.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<h2 id="interactions">Interactions</h2>
+
+<p>Here is an example of dragging elements:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="drag" name="drag"></textarea>
+
+
+<iframe id="preview-drag" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("drag", "drag.html", "", "false", "true");
+</script>
+<i><a href="drag.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+<p>Here is an example of brushing elements:</p>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+
+
+</head>
+
+<body>
+<textarea id="brush" name="brush"></textarea>
+
+
+<iframe id="preview-brush" class="CodePreview"></iframe>
+<!--<input type="file" onchange="loadfile(this)"> <a href="#my-header" onclick='saveTextAsFile()'>Save/Download</a>-->
+
+<script>
+    renderCode("brush", "brush.html", "", "false", "true");
+</script>
+<i><a href="brush.html">See output in new page.</a></i>
+
+</body>
+
+</html>
+
+</article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <h2 class="footer-heading">Visualization in HCI</h2>
+
+    <div class="footer-col-1 column">
+      <ul>
+        <!--<li>
+          <a href="https://piazza.com/class/ihv3pvmbyc86g7">Online discussions - Piazza</a>
+        </li>-->
+        <li><a href="mailto:cmu.vis.course@gmail.com">cmu.vis.course@gmail.com</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+
+        
+        
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <p class="text">© Carnegie Mellon University, 2017</p>
+    </div>
+
+  </div>
+
+</footer>
+
+    <!-- Google Analytics -->
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+    </body>
+</html>

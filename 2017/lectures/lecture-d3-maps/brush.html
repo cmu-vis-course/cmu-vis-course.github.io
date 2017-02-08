@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+svg {
+  font: 10px sans-serif;
+}
+
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var margin = {top: 10, right: 10, bottom: 100, left: 40},
+    margin2 = {top: 330, right: 10, bottom: 20, left: 40},
+    width = 720 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom,
+    height2 = 400 - margin2.top - margin2.bottom;
+
+var parseDate = d3.timeParse("%b %Y");
+
+var xScale = d3.scaleTime().range([0, width]),
+    xScale2 = d3.scaleTime().range([0, width]),
+    yScale = d3.scaleLinear().range([height, 0]),
+    yScale2 = d3.scaleLinear().range([height2, 0]);
+
+var xAxis = d3.axisBottom().scale(xScale),
+    xAxis2 = d3.axisBottom().scale(xScale2),
+    yAxis = d3.axisLeft().scale(yScale);
+
+var area = d3.area()
+  .curve(d3.curveMonotoneX)
+    .x(function(d) { return xScale(d.date); })
+    .y0(height)
+    .y1(function(d) { return yScale(d.rate); });
+
+var area2 = d3.area()
+.curve(d3.curveMonotoneX)
+    .x(function(d) { return xScale2(d.date); })
+    .y0(height2)
+    .y1(function(d) { return yScale2(d.rate); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var focus = svg.append("g")
+    .attr("class", "focus")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var context = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+var brush = d3.brushX()
+      .extent([[0,0],[width,height]])
+      .on("brush end", brushed);
+
+d3.csv("data/unemployment_2005_2015.csv", type, function(error, data) {
+  xScale.domain(d3.extent(data.map(function(d) { return d.date; })));
+  yScale.domain([3, 11]);
+  xScale2.domain(xScale.domain());
+  yScale2.domain(yScale.domain());
+
+  focus.append("path")
+      .datum(data)
+      .attr("class", "area")
+      .attr("d", area);
+
+  focus.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  focus.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis).append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Unemployment Rate (%)");
+
+  context.append("path")
+      .datum(data)
+      .attr("class", "area")
+      .attr("d", area2);
+
+  context.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height2 + ")")
+      .call(xAxis2);
+
+  context.append("g")
+    .attr("class", "x-brush")
+    .call(brush);
+
+});
+
+function brushed() {
+
+  var s = d3.event.selection;
+
+  xScale.domain(s.map(xScale2.invert, xScale2));
+
+  focus.select(".area").attr("d", area);
+  focus.select(".x-axis").call(xAxis);
+
+}
+
+function type(d) {
+  d.date = parseDate(d.date);
+  d.rate = +d.rate;
+  return d;
+}
+
+</script>

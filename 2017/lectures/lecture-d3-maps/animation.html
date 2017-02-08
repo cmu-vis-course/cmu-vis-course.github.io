@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>I'm Learning D3</title>
+	<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+	<style>
+		button {
+			position: absolute;
+			margin-left: 6px;
+			margin-top: 6px;
+		}
+	</style>
+</head>
+<body>
+	<button id="start">Transition</button>
+	<!-- Location for page elements. -->
+<script>
+
+	var svgContainer = d3.select("body").append("svg")
+		.attr("width", 600)
+		.attr("height", 600)
+		.style("border-color", "black")
+		.style("border-style", "solid")
+		.style("border-width", "1px");
+
+	var rectangle = svgContainer.append("rect")
+		.attr("x", 50)
+		.attr("y", 50)
+		.attr("width", 50)
+		.attr("height", 50)
+		.attr("fill", "red");
+
+	d3.select("#start").on("click", function() {
+
+		rectangle
+		.transition()
+			.attr("x", 500)
+			.attr("width", 100).attr("height", 100)
+			.duration(5000)
+			.ease(d3.easeBounce)
+			.on("end", function() {
+				d3.select(this)
+					.transition()
+					.attr("y", 350)
+					.attr("fill", "steelblue")
+					.duration(5000)
+					.ease(d3.easeElastic);
+			});
+
+	});
+
+
+</script>
+</html>
